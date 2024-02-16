@@ -1,0 +1,255 @@
+
+initialConditions =[5e-12 9e-8 1.7e-7 2e-8 7e-10 0.0000014 0 0 0 0 0 0 0 0 0 0 0 0]; %starting conditions (concentrations) 
+k = [2e7 2e7 1e7 2e6 1e7 1e8 1e7 4e8 .0005 .4 .3 1.15 8.2 32 1e5 24 44 .001 70 .02]; %concentration rates 
+time = [0 250];
+opts = odeset('RelTol',1e-12,'AbsTol',1e-12); %This is REQUIRED for simulation
+[t,y] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+
+k(20) = 0;
+time = [0 250];
+opts = odeset('RelTol',1e-12,'AbsTol',1e-12); %This is REQUIRED for simulation
+[t2,y2] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+
+
+thrombin = (y(:,9) + 1.2 * y(:,11)) / 1.4e-6 * 100; %note the 1.2x scaling
+thrombin2 = (y2(:,9) + 1.2 * y2(:,11)) / 1.4e-6 * 100; %note y2 is called
+
+%The legend states:
+%"the relative specific activity for alphaIIa = 1 and mIIa = 1.2. 100%
+%formation corresponds to the complete formations of alphaIIa (1.4 uM)"
+%You can create variables called thrombin for simulation 1 and thrombin2
+%for simulation2
+
+f2a = figure;
+plot(t, thrombin); %plot t from the first simulation vs thrombin
+hold on %A "hold on" command lets you add more data to a single plot
+plot(t2, thrombin2); %plot t2, from the 2nd simulation, vs thrombin2
+legend("Basic Model","Alternate Model"); %Legend
+xlabel("time, s");   
+ylabel("% Thrombin formation");
+saveas(f2a,"figure2a.png");
+hold off
+
+factorXa = (y(:,16) + y(:,8) + y(:,10)) / 170e-9 * 100; %No scaling
+factorXa2 = (y2(:,16) + y2(:,8) + y2(:,10)) / 170e-9 * 100;
+f2b = figure;
+plot(t, factorXa);
+hold on ;
+plot(t2, factorXa2);
+legend("Basic Model","Alternate Model"); %Legend
+xlabel("time, s");
+ylabel("% Faxtor Xa formation"); %Note the change
+saveas(f2b,"figure2b.png");
+hold off;
+
+factorIXa = (y(:,15) + y(:,14) + y(:,7)) / 90e-9 * 100;
+factorIXa2 = (y2(:,15) + y2(:,14) + y2(:,7)) / 90e-9 * 100;
+f2c = figure;
+plot(t, factorIXa); %selecting the second column, which is Enzyme
+hold on %A "hold on" command lets you add more data to a single plot
+plot(t2, factorIXa2); %selecting thte third column, which is Complex
+legend("Basic Model","Alternate Model"); %Legend
+xlabel("time, s");
+ylabel("% Factor IXa formation");
+saveas(f2c,"figure2c.png");
+hold off
+
+time = [0 250];
+opts = odeset('RelTol',1e-12,'AbsTol',1e-12); %This is REQUIRED for simulation
+[t3,y3] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin = (y(:,9) + 1.2 * y(:,11)) / 1.4e-6 * 100; 
+thrombin3 = (y3(:,9) + 1.2 * y3(:,11)) / 1.4e-6 * 100; 
+factorXa = (y(:,16) + y(:,8) + y(:,10)) / 170e-9 * 100; 
+factorXa3 = (y3(:,16) + y3(:,8) + y3(:,10)) / 170e-9 * 100;
+factorvIIIa = (y(:,15) + y(:, 14) + y(:,7)) / 0.7e-9 * 100;
+factorVIIIa3 = (y3(:,15) + y3(:,14) + y3(:,7)) / 0.7e-9 * 100;
+factorIXa = (y(:,15) + y(:,14) + y(: ,7)) / 90e-9 * 100;
+factorIXa3 = (y3 (:,15) + y3(: ,14) + y3(: ,7)) / 90e-9 * 100;
+factorV = (y3(:,4)) / 20e-9 * 100;
+factorVIII = (y3 (:,5)) / 0.7e-9 * 100;
+f1a = figure;
+plot(t, thrombin);
+xlabel("Time (s)");
+ylabel("% Thrombin Formation");
+legend("Basic Model", "Location", "southeast");
+title("Figure 1a");
+saveas(f1a, "Figure_1a.png");
+hold off
+
+% Figure 1B - Thrombin formation (uM = e-6 M)
+thrombin1 = (thrombin/100) * 1.4;  % makes sure that thrombin is not a percent
+k(7) = 1e6;
+k(9) = 0.0005;
+[t1b, y1b] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin1b = (y1b(:,9) + 1.2 * y1b(:,11)) * 1e6; % in uM
+ 
+k(7) = 1e7; % originals k value
+k(9) = 0.05; % original k value
+k(8) = 4e7; 
+k(10) = 0.04;
+[t1c, y1c] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin1c = (y1c(:,9) + 1.2 * y1c(:,11)) * 1e6; % in uM
+ 
+f1b = figure;
+plot(t, thrombin1);
+hold on 
+plot(t1b, thrombin1b);
+plot(t1c, thrombin1c);
+legend("Basic Model", "k7 = 1e6 and k9 = 0.0005", "k8 = 4e7 and k10 = 0.04" , 'Location', 'southeast') ;
+xlabel("Time (s)") ;
+ylabel("Thrombin Formation (uM)");
+title("Figure 1b"); 
+saveas(f1b, "Figure_1b.png");
+hold off 
+
+f3a = figure;
+plot (t3, thrombin3) 
+hold on 
+plot (t3, factorVIII) 
+hold on
+plot(t3, factorV)
+hold on 
+plot(t3, factorXa3)
+hold on 
+plot (t3, factorIXa3)
+legend("Thrombin", "FactorVIII", "FactorV", "FactorXa", "FactorIXa")
+xlabel("time, s");
+ylabel ("% Formation / Degredation");
+saveas(f3a,"figure3a.png");
+hold off 
+
+
+
+% already converted initial conditions needed to 10 pM, 50 pM, 500 pM, 5 nM
+% thrombin 4 = thrombin 1a
+k(8) = 4e8;
+k(10) = 0.4;
+
+% at [TFVIIa] = 10 pM (10e-12 M)
+initialConditions(1) = 10e-12 ; 
+[t4a, y4a] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin4a = (y4a(:,9) + 1.2 * y4a(:,11)) * 1e6;
+
+% at [TFVIIal = 50 pM (50e-12 M)
+initialConditions(1) = 50e-12 ;
+[t4b, y4b] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts); 
+thrombin4b = (y4b(:,9) + 1.2 * y4b(:, 11)) * 1e6 ;
+
+% at [TFVIIal = 500 pM (500e-12 M)
+initialConditions(1) = 500e-12;
+[t4c, y4c] = ode23s(@(t,y) coagulation(t, y, k),time, initialConditions, opts); 
+thrombin4c = (y4c(:,9) + 1.2 * y4c(:,11)) * 1e6; 
+
+% at [TFVIIal = 5 nM (5e-9 M)
+initialConditions(1) = 5e-9;
+[t4d, y4d] = ode23s(@(t,y) coagulation(t, y, k),time, initialConditions, opts); 
+thrombin4d = (y4d(:,9) + 1.2 * y4d(:,11)) * 1e6; 
+
+% making thrombin not a percent
+thrombin = thrombin / 100 * 1.4;
+
+f4 = figure;
+plot(t, thrombin);
+hold on 
+plot(t4a, thrombin4a); 
+plot(t4b, thrombin4b);
+plot(t4c, thrombin4c);
+plot(t4d, thrombin4d);
+legend("[TFVIIa] = 5 pM", "[TFVIIa] = 10 pM", "[TFVIIa] = 50 pM", "[TFVIIa] = 500 pM", "[TFVIIa] = 5 nM", 'Location', 'southeast');
+xlabel("Time (s)");
+ylabel("Thrombin Formation (uM) ");
+title("Figure 4");
+saveas(f4, "Figure_4.png");
+hold off
+
+
+
+% [VIII] = 0
+initialConditions(1) = 5e-12;
+initialConditions(5) = 0;
+[t5a, y5a] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin5a = (y5a(:,9) + 1.2 * y5a(:,11)) * 1e6; 
+
+% [V] = 0
+initialConditions(5) = 0.7e-9;
+initialConditions(4) = 0;
+[t5a_2, y5a_2] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin5a_2 = (y5a_2(:,9) + 1.2 * y5a_2(:,11)) * 1e6; 
+
+f5a = figure;
+plot(t, thrombin);
+hold on
+plot(t5a, thrombin5a);
+plot(t5a_2, thrombin5a_2);
+legend("Basic Model", "[VIII] = 0 M","[V] = 0 M", "Location", "southeast");
+xlabel("time (s)");
+ylabel("Thrombin Formation (uM) ");
+title("Figure 5a");
+saveas(f5a, "Figure_5a.png");
+hold off 
+
+% Figure 5B - Thrombin Formation (uM) 
+initialConditions(4) = 20e-9; % we return to the original value of [V]
+
+% [TFVIIa] = 1nM
+initialConditions(1) = 1e-9;
+[t5b, y5b] =  ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin5b = (y5b(:,9) + 1.2 * y5b(:,11))*1e6;
+
+% [VIII] = 0
+initialConditions(5) = 0;
+[t5b_2, y5b_2] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin5b_2 = (y5b_2(:,9) + 1.2 * y5b_2(:,11))*1e6;
+
+% [V] = 0
+initialConditions(5) = 0.7e-9;
+initialConditions(4) = 0;
+[t5b_3, y5b_3] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin5b_3 = (y5b_3(:,9) + 1.2 * y5b_3(:,11))*1e6;
+
+f5b = figure;
+plot(t5b, thrombin5b);
+hold on
+plot(t5b_2, thrombin5b_2);
+plot(t5b_3, thrombin5b_3);
+legend("[TFVIIa] = 1 nM", "[VIII] = 0 M", "[V] = 0 M" , "Location", "southeast");
+xlabel("Time (s)");
+ylabel("Thrombin Formation (uM) ");
+title("Figure 5b");
+saveas(f5b, "Figure_5b.png");
+hold off
+
+% Figure 6 - Thrombin Formation (uM)
+% return multiple initial conditions and k values 
+initialConditions(4) = 20e-9;
+initialConditions(1) = 5e-12;
+
+% k2 = 0
+k(2) = 0;
+[t6a, y6a] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin6a = (y6a(:,9) + 1.2 * y6a(:,11))*1e6;
+
+% k1 = 0
+k(2) = 2e7;
+k(1) = 0;
+[t6b, y6b] = ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin6b = (y6b(:,9) + 1.2 * y6b(:,11))*1e6;
+
+% k4 = 0
+k(1) = 2e7;
+k(4) = 0;
+[t6c, y6c] =  ode23s(@(t,y) coagulation(t, y, k), time, initialConditions, opts);
+thrombin6c = (y6c(:,9) + 1.2 * y6c(:,11))*1e6;
+
+f6 = figure;
+plot(t, thrombin);
+hold on
+plot(t6a, thrombin6a);
+plot(t6b, thrombin6b);
+plot(t6c, thrombin6c);
+legend("Basic Model", "k2 = 0", "k1 = 0", "k4 = 0" ,"Location", "southeast");
+xlabel("Time (s)");
+ylabel("Thrombin Formation (uM) ");
+title("Figure 6");
+saveas(f6, "Figure_6.png");
+hold off
