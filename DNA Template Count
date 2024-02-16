@@ -1,0 +1,319 @@
+validInput = false;
+   while ~validInput
+       choice = input('What strand are you using: Template(T) or
+Coding(C)? ','s');
+       if strcmpi(choice, 'T')
+           validInput = true;
+       elseif strcmpi(choice, 'C')
+           validInput = true;
+       else
+           disp('Invalid Input.  Please type T or C');
+       end
+   end
+   inputFileName = input('Enter file name: ', 's');
+   file = fopen(inputFileName, 'r');
+   outputFileName ='output.txt';
+complementaryStrand = '';
+RNA = '';
+%These are all counts that initialize the value of 0 to all the
+stuff
+% I need to count
+   numA = 0 ;
+   numT = 0 ;
+   numC = 0 ;
+   numG = 0 ;
+   numHBonds = 0 ;
+   numRA = 0 ;
+   numRU = 0 ;
+   numRC = 0 ;
+   numRG = 0 ;
+   numAminoAcids = 0 ;
+   countAla = 0 ;
+   countArg = 0 ;
+   countAsn = 0 ;
+   countAsp = 0 ;
+   countCys = 0 ;
+   countGlu = 0 ;
+   countGln = 0 ;
+   countGly = 0 ;
+   countHis = 0 ;
+   countIle = 0 ;
+   countLeu = 0 ;
+   countLys = 0 ;
+   countMet = 0 ;
+   countPhe = 0 ;
+   countPro = 0 ;
+   countSer = 0 ;
+   countThr = 0 ;
+   countTrp = 0 ;
+   countTyr = 0 ;
+   countVal = 0 ;
+   %these are maps I created using
+   % https://www.mathworks.com/matlabcentral/answers/525207-
+placing-a-structure-within-a-map-container-or-is-there-a-
+different-more-suitable-way-to-store-thi
+   %this map allows me to place the counter next to the amino
+acid I want.
+%
+   aminoAcidCounts  = struct('Ala', 0,  'Arg', 0, 'Asn', 0,
+'Asp', 0, 'Cys', 0, ...
+          'Glu', 0, 'Gln', 0, 'Gly', 0, 'His', 0, 'Ile', 0 ,...
+           'Leu', 0, 'Lys', 0, 'Met', 0, 'Phe', 0, 'Pro', 0, ...
+            'Ser', 0, 'Thr', 0, 'Trp', 0, 'Tyr', 0, 'Val', 0);
+      ayudameXOXO = containers.Map ( ...
+       {'UUU' ,'UUC','UUA', 'UUG', 'CUU', 'CUC', 'CUA',
+'CUG', ...
+'AUU' ,'AUC','AUA', 'AUG', 'GUU', 'GUC', 'GUA', 'GUG' ... 'UCU' ,'UCC','UCA', 'UCG', 'CCU', 'CCC', 'CCA', 'CCG' ... 'ACU' ,'ACC','ACA', 'ACG', 'GCU', 'GCC', 'GCA', 'GCG' ... 'UAU' ,'UAC','UAA', 'UAG', 'CAU', 'CAC', 'CAA', 'CAG' ... 'AAU' ,'AAC','AAA', 'AAG', 'GAU', 'GAC', 'GAA', 'GAG' ... 'UGU' ,'UGC','UGA', 'UGG', 'CGU', 'CGC', 'CGA', 'CGG' ... 'AGU' ,'AGC','AGA', 'AGG', 'GGU', 'GGC', 'GGA', 'GGG'} ... ...
+,{
+'Phe' ,'Phe','Leu', 'Leu', 'Leu', 'Leu', 'Leu', 'Leu', ... 'Ile' ,'Ile','Ile', 'Met', 'Val', 'Val', 'Val', 'Val' ...
+
+       'Ser' ,'Ser','Ser', 'Ser', 'Pro', 'Pro', 'Pro', 'Pro' ...
+       'Thr' ,'Thr','Thr', 'Thr', 'Ala', 'Ala', 'Ala', 'Ala' ...
+       'Tyr' ,'Tyr','STOP', 'STOP', 'His', 'His', 'Gln',
+'Gln' ...
+       'Asn' ,'Asn','Lys', 'Lys', 'Asp', 'Asp', 'Glu', 'Glu' ...
+       'Cys' ,'Cys','STOP', 'Trp', 'Arg', 'Arg', 'Arg', 'Arg' ...
+       'Ser' ,'Ser','Arg', 'Arg', 'Gly', 'Gly', 'Gly', 'Gly' ...
+       });
+   fileOutput = fopen(outputFileName, 'w');
+   while ~feof(file)
+   inputText = fgetl(file);
+if strcmpi(choice, 'T')
+  for i = 1:length(inputText)
+      if inputText(i) == 'A'
+          RNA = [RNA 'U'];
+          numA = numA + 1;
+          numRU = numRU + 1;
+      elseif inputText(i) == 'T'
+          RNA = [RNA 'A'];
+          numT = numT + 1;
+          numRA = numRA + 1;
+    elseif inputText(i) == 'C'
+          RNA = [RNA 'G'];
+          numC = numC + 1;
+          numRG = numRG + 1;
+    elseif inputText(i) == 'G'
+          RNA = [RNA 'C'];
+          numG = numG + 1;
+          numRC = numRC + 1;
+      end
+  end
+        ayudameXOXO = containers.Map ( ...
+
+       {'UUU' ,'UUC','UUA', 'UUG', 'CUU', 'CUC', 'CUA',
+'CUG', ...
+       'AUU' ,'AUC','AUA', 'AUG', 'GUU', 'GUC', 'GUA', 'GUG' ...
+       'UCU' ,'UCC','UCA', 'UCG', 'CCU', 'CCC', 'CCA', 'CCG' ...
+       'ACU' ,'ACC','ACA', 'ACG', 'GCU', 'GCC', 'GCA', 'GCG' ...
+       'UAU' ,'UAC','UAA', 'UAG', 'CAU', 'CAC', 'CAA', 'CAG' ...
+       'AAU' ,'AAC','AAA', 'AAG', 'GAU', 'GAC', 'GAA', 'GAG' ...
+       'UGU' ,'UGC','UGA', 'UGG', 'CGU', 'CGC', 'CGA', 'CGG' ...
+       'AGU' ,'AGC','AGA', 'AGG', 'GGU', 'GGC', 'GGA', 'GGG'} ...
+       ...
+,{
+'Phe' ,'Phe','Leu', 'Leu', 'Leu', 'Leu', 'Leu', 'Leu', ... 'Ile' ,'Ile','Ile', 'Met', 'Val', 'Val', 'Val', 'Val' ... 'Ser' ,'Ser','Ser', 'Ser', 'Pro', 'Pro', 'Pro', 'Pro' ... 'Thr' ,'Thr','Thr', 'Thr', 'Ala', 'Ala', 'Ala', 'Ala' ... 'Tyr' ,'Tyr','STOP', 'STOP', 'His', 'His', 'Gln',
+'Gln' ...
+       'Asn' ,'Asn','Lys', 'Lys', 'Asp', 'Asp', 'Glu', 'Glu' ...
+       'Cys' ,'Cys','STOP', 'Trp', 'Arg', 'Arg', 'Arg', 'Arg' ...
+       'Ser' ,'Ser','Arg', 'Arg', 'Gly', 'Gly', 'Gly', 'Gly' ...
+});
+        %these for loops allow me to count 3 characters in the
+sequence
+        %used in the beginning
+        %if statements assure that conditions are true to run
+that part of
+%the code
+   for i = 1:3:length(RNA)
+       codon = RNA(i:min(i+2, end));
+       if isKey(ayudameXOXO, codon)
+           aminoAcid = ayudameXOXO(codon);
+if isfield(aminoAcidCounts, aminoAcid)
+   aminoAcidCounts.(aminoAcid) = aminoAcidCounts.(aminoAcid)+1;
+end
+else
+if i == 1
+fprintf( 'Amino Acid Sequence:%s', aminoAcid);
+else
+    fprintf(', %s', aminoAcid);
+end
+
+end end
+%else if allow me to counter if statments if the initial
+conditions are not
+%met
+%
+elseif strcmpi(choice, 'C')
+   for i = 1:length(inputText)
+      if inputText(i) == 'A'
+          complementaryStrand = [complementaryStrand 'T'];
+         RNA = [RNA 'A'];
+         numA = numA + 1;
+         numRA = numRA + 1; ;
+      elseif inputText(i) == 'T'
+          complementaryStrand = [complementaryStrand 'A'];
+          RNA = [RNA 'U'];
+          numT = numT + 1;
+          numRU = numRU + 1; ;
+    elseif inputText(i) == 'C'
+          complementaryStrand = [complementaryStrand 'G'];
+          RNA = [RNA 'C'];
+          numC = numC + 1;
+          numRC = numRC + 1; ;
+    elseif inputText(i) == 'G'
+          complementaryStrand = [complementaryStrand 'C'];
+          numG = numG + 1;
+          RNA = [RNA 'G'];
+          numRG = numRG + 1; ;
+end
+   end
+        ayudameXOXO = containers.Map ( ...
+       {'UUU' ,'UUC','UUA', 'UUG', 'CUU', 'CUC', 'CUA',
+'CUG', ...
+       'AUU' ,'AUC','AUA', 'AUG', 'GUU', 'GUC', 'GUA', 'GUG' ...
+       'UCU' ,'UCC','UCA', 'UCG', 'CCU', 'CCC', 'CCA', 'CCG' ...
+       'ACU' ,'ACC','ACA', 'ACG', 'GCU', 'GCC', 'GCA', 'GCG' ...
+       'UAU' ,'UAC','UAA', 'UAG', 'CAU', 'CAC', 'CAA', 'CAG' ...
+       'AAU' ,'AAC','AAA', 'AAG', 'GAU', 'GAC', 'GAA', 'GAG' ...
+       'UGU' ,'UGC','UGA', 'UGG', 'CGU', 'CGC', 'CGA', 'CGG' ...
+
+'AGU' ,'AGC','AGA', 'AGG', 'GGU', 'GGC', 'GGA', 'GGG'} ... ...
+,{
+'Phe' ,'Phe','Leu', 'Leu', 'Leu', 'Leu', 'Leu', 'Leu', ... 'Ile' ,'Ile','Ile', 'Met', 'Val', 'Val', 'Val', 'Val' ... 'Ser' ,'Ser','Ser', 'Ser', 'Pro', 'Pro', 'Pro', 'Pro' ... 'Thr' ,'Thr','Thr', 'Thr', 'Ala', 'Ala', 'Ala', 'Ala' ... 'Tyr' ,'Tyr','STOP', 'STOP', 'His', 'His', 'Gln',
+'Gln' ...
+       'Asn' ,'Asn','Lys', 'Lys', 'Asp', 'Asp', 'Glu', 'Glu' ...
+       'Cys' ,'Cys','STOP', 'Trp', 'Arg', 'Arg', 'Arg', 'Arg' ...
+       'Ser' ,'Ser','Arg', 'Arg', 'Gly', 'Gly', 'Gly', 'Gly' ...
+       });
+   for i = 1:3:length(RNA)
+       codon = RNA(i:min(i+2, end));
+       if isKey(ayudameXOXO, codon)
+           aminoAcid = ayudameXOXO(codon);
+       if isfield(aminoAcidCounts, aminoAcid)
+   aminoAcidCounts.(aminoAcid) = aminoAcidCounts.(aminoAcid)+1;
+end
+if i == 1
+           fprintf( 'Amino Acid Sequence:%s', aminoAcid);
+else
+               fprintf(', %s', aminoAcid);
+           end
+else
+           fprintf( 'No Codon Detected For: %s\n', codon);
+       end
+end
+end end
+dsDNAMW = '';
+   numHBonds  = (numA *2)+(numT *2)+(numC *3)+(numG *3);
+   dsDNAadenine = (numA + numT) ;
+   dsDNAthymine = (numA + numT) ;
+
+   dsDNAcytosine = (numC + numG);
+   dsDNAguanine = (numG + numC);
+   fprintf(fileOutput,'Complementary Sequence: %s\n',
+complementaryStrand);
+   fprintf(fileOutput,'RNA Sequence:%s\n', RNA);
+   fprintf(fileOutput,'Number of Adenine: %d\n', numA );
+   fprintf(fileOutput,'Number of Thymine: %d\n', numT );
+   fprintf(fileOutput,'Number of Cytosine: %d\n', numC );
+   fprintf(fileOutput,'Number of Guanine: %d\n', numG );
+   fprintf(fileOutput,'dsDNA Hydrogens: %d\n\n', numHBonds);
+   fprintf('\nAmino Acid Counts:\n');
+   fprintf('Ala:%d\n', aminoAcidCounts.Ala);
+   fprintf('Arg:%d\n', aminoAcidCounts.Arg);
+   fprintf('Asn:%d\n', aminoAcidCounts.Asn);
+   fprintf('Asp:%d\n', aminoAcidCounts.Asp);
+   fprintf('Cys:%d\n', aminoAcidCounts.Cys);
+   fprintf('Glu:%d\n', aminoAcidCounts.Glu);
+   fprintf('Gln:%d\n', aminoAcidCounts.Gln);
+   fprintf('Gly:%d\n', aminoAcidCounts.Gly);
+   fprintf('His:%d\n', aminoAcidCounts.His);
+   fprintf('Ile:%d\n', aminoAcidCounts.Ile);
+   fprintf('Leu:%d\n', aminoAcidCounts.Leu);
+   fprintf('Lys:%d\n', aminoAcidCounts.Lys);
+   fprintf('Met:%d\n', aminoAcidCounts.Met);
+   fprintf('Phe:%d\n', aminoAcidCounts.Phe);
+   fprintf('Pro:%d\n', aminoAcidCounts.Pro);
+   fprintf('Ser:%d\n', aminoAcidCounts.Ser);
+   fprintf('Thr:%d\n', aminoAcidCounts.Thr);
+   fprintf('Thr:%d\n', aminoAcidCounts.Trp);
+   fprintf('Tyr:%d\n', aminoAcidCounts.Tyr);
+   fprintf('Val:%d\n', aminoAcidCounts.Val);
+ dsDNAMW = (dsDNAadenine * 313.2) + (dsDNAthymine * 304.2) +
+(dsDNAcytosine * 289.2) + (numG * 329.2) + 79.0;
+   %strcmpi strings the intital choice to the rest of the code
+ if strcmpi(choice, 'T')
+   disp('5 to 3 RNA Sequence:');
+   disp(RNA);
+   disp (['Number of Adenine:' , num2str(numA)]);
+   disp (['Number of Thymine:' ,num2str(numT)]);
+   disp (['Number of Cytosine:' , num2str(numC)]);
+   disp (['Number of Guanine:', num2str(numG)]);
+
+   disp (['Number of Uracil: ', num2str(numRU)]);
+   disp (['Number of dsAdenine:' , num2str(dsDNAadenine)]);
+   disp (['Number of dsThymine:' , num2str(dsDNAthymine)]);
+   disp (['Number of dsGuanine:' , num2str(dsDNAcytosine)]);
+   disp (['Number of dsUracil:' , num2str(dsDNAguanine)]);
+   disp(['Number of Hydrogens: ',num2str(numHBonds)]);
+   disp(['Molecular Weight of dsDNA in Daltons(g/mol):',
+num2str(dsDNAMW)]);
+else
+       %these are all display to user references
+   disp('Complementary Strand:');
+   disp(complementaryStrand);
+   disp('RNA Sequence:');
+   disp(RNA);
+   disp (['Number of Complementary Adenine:', num2str(numA)]);
+   disp (['Number of Complementary Thymine:',num2str(numT)]);
+   disp (['Number of Complementary Cytosine:', num2str(numC)]);
+   disp (['Number of Complementary Guanine:', num2str(numG)]);
+   disp (['Number of Uracil: ', num2str(numRU)]);
+   disp (['Number of dsAdenine:' , num2str(dsDNAadenine)]);
+   disp (['Number of dsThymine:' , num2str(dsDNAthymine)]);
+   disp (['Number of dsGuanine:' , num2str(dsDNAcytosine)]);
+   disp (['Number of dsUracil:' , num2str(dsDNAguanine)]);
+   disp(['Number of Hydrogens: ', num2str(numHBonds)]);
+   disp(['Molecular Weight of dsDNA in Daltons(g/mol):',
+num2str(dsDNAMW)]);
+end
+ dsDNA_counts = [dsDNAadenine,dsDNAthymine,
+dsDNAcytosine,dsDNAguanine];
+ complementaryStrand_counts = [numA, numT, numC, numG];
+   %subplot allows figure to be in same display
+
+figure ;
+ bar([dsDNA_counts; complementaryStrand_counts]');
+ xlabel('Nucleic Acid');
+ ylabel('Count of Bases');
+ title('Counts of Complementary and dsDNA Nucleic Acids');
+ xticks(1:4);
+ xticklabels({'dsAdenine, Adenine', 'ds Thymine, Thymine', 'ds
+Cytosine, Cytosine', 'dsGuanine, Guanine'});
+ subplot(2,1,1);
+ bar([dsDNA_counts; complementaryStrand_counts]');
+ xlabel('Nucleic Acid');
+ ylabel('Count of Bases');
+ title('Counts of Complementary and dsDNA Nucleic Acids');
+ xticks(1:4);
+ xticklabels({'dsAdenine, Adenine', 'ds Thymine, Thymine', 'ds
+Cytosine, Cytosine', 'dsGuanine, Guanine'});
+ subplot(2,1,2);
+ aminoAcids = fieldnames(aminoAcidCounts);
+ counts = zeros(size(aminoAcids));
+ for i = 1:length(aminoAcids)
+     counts(i) = aminoAcidCounts.(aminoAcids{i});
+ end
+ bar(counts);
+ xlabel('Amino Acids') ;
+ ylabel('Count');
+ title('Amino Acid Counts');
+ set(gca,'XTick', 1:length(aminoAcids), 'XTickLabel',
+aminoAcids);
+% Addition of to the M.W.
+% takes into account the M.W. of a % 5 monophosphate left
+% by most restriction enzymes.
+%sciencedirect.com
+%https://www.sciencedirect.com/topics/nursing-and-health-
+professions/molecular-weight#:~:text=M.W.%20of%20dsDNA%20%3D
+%20(number%20of,salt%20solution)%20is%20325%20Daltons.
+%https://www.mathworks.com/matlabcentral/answers/index
+%REFERENCES, WILTON PHUNG
